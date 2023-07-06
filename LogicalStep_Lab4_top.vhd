@@ -32,6 +32,14 @@ architecture simplecircuit of LogicalStep_Lab4_top is
     );
   end component;
 
+  component segment7_traffic is port (
+    green    : in std_logic;
+    amber    : in std_logic;
+    red      : in std_logic;
+    sevenseg : out std_logic_vector(6 downto 0) 
+    );
+  end component;
+
   component clock_generator is port (
     sim_mode : in    boolean;
     reset    : in    std_logic;
@@ -83,6 +91,12 @@ architecture simplecircuit of LogicalStep_Lab4_top is
   signal pb_filtered : std_logic_vector(3 downto 0);
   signal pb : std_logic_vector(3 downto 0);
 
+  signal rst_n_filtered : std_logic;
+
+  signal ew_traffic, ns_traffic : std_logic_vector(2 downto 0);
+
+  signal ew_out, ns_out : std_logic_vector(6 downto 0);
+
 begin
   PB_FILL   : component PB_filters port map(
     clkin_50,
@@ -103,11 +117,37 @@ begin
   );
 
   MEALY_MAC : component state_machine port map(
-    pedsig_ew, -- pedestrian hold register signal (EW)
-    pedsig_ns, -- pedestrian hold register signal (NS)
-    sm_clken,  -- cycle generator normal clock
-    blink_sig, -- cycle generator blink clock
-    ew_agd,    -- output in EW
-    ns_agd     -- output in NS 
+    pedsig_ew,     -- pedestrian hold register signal (EW)
+    pedsig_ns,     -- pedestrian hold register signal (NS)
+    sm_clken,      -- cycle generator normal clock
+    blink_sig,     -- cycle generator blink clock
+    ew_traffic,    -- output in EW
+    ns_traffic     -- output in NS 
   );
+
+  -- Output seven segment code
+
+  TRAFFIC_EW : component segment7_traffic port map (
+    ew_traffic(2),
+    ew_traffic(1),
+    ew_traffic(0),
+    ew_out
+  );
+
+  TRAFFIC_NS : component segment7_traffic port map (
+    ns_traffic(2),
+    ns_traffic(1),
+    ns_traffic(0),
+    ns_out
+  );
+
+  SEVENSEG_MUX : component segment7_mux port map (
+    clkin_50,
+    ns_out, -- din2
+    ew_out, -- din1
+    seg7_data, -- builtin LogicalStep outputs
+    seg7_char2,
+    seg7_char1
+  );
+
 end architecture simplecircuit;
