@@ -5,7 +5,7 @@ library ieee;
 
 entity state_machine is port(
   clk_input, reset, i0, i1, i2 : in  std_logic;
-  output1, output2             : out std_logic;
+  output1, output2             : out std_logic
   );
 end entity;
 
@@ -14,17 +14,6 @@ architecture design of state_machine is
   signal current_state, next_state : state_names;
 
 begin
-
-  register_section: process (clk_input)
-  begin
-    if (rising_edge(clk_input)) then
-      if (reset='1') then
-        current_state <= s0;
-      else
-        current_state <= next_state;
-      end if;
-    end if;
-  end process;
 
   transition_section: process (i0, i1, i2, current_state)
   begin
@@ -46,6 +35,17 @@ begin
       when s14 =>
       when s15 =>
     end case;
+  end process;
+
+  register_section: process (clk_input)
+  begin
+    if (rising_edge(clk_input)) then
+      if (reset='1') then
+        current_state <= s0;
+      else
+        current_state <= next_state;
+      end if;
+    end if;
   end process;
 
   decoder_section: process (current_state)
