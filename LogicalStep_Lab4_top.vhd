@@ -116,7 +116,7 @@ begin
     blink_sig
   );
 
-  MEALY_MAC : component state_machine port map(
+  MOORE_MAC : component state_machine port map(
     pedsig_ew,     -- pedestrian hold register signal (EW)
     pedsig_ns,     -- pedestrian hold register signal (NS)
     sm_clken,      -- cycle generator normal clock
