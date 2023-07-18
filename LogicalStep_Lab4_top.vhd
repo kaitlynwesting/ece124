@@ -109,6 +109,10 @@ architecture simplecircuit of LogicalStep_Lab4_top is
 
   signal rst_n_filtered : std_logic;
 
+  signal synch_rst : std_logic;
+
+  signal ew_sync, ns_sync: std_logic;
+
   signal ew_traffic, ns_traffic : std_logic_vector(2 downto 0);
 
   signal ew_out, ns_out : std_logic_vector(6 downto 0);
@@ -154,6 +158,22 @@ begin
   
   leds(3) <= ew_pending;
   leds(1) <= ns_pending;
+
+  -- synchronizer instance for east-west
+  SYNC_EW: component synchronizer port map(
+	clkin_50, -- global clock input
+	synch_rst, -- reset for registers and SM
+	pb(1), -- input for EW crossing
+	ew_sync -- output in EW
+  );
+
+  -- synchronizer instance for north-south
+  SYNC_NS: component synchronizer port map(
+	clkin_50, -- global clock input
+	synch_rst, -- reset for registers and SM
+	pb(0), -- input for NS crossing
+	ns_sync -- output in NS
+  );
 
   MOORE_MAC : component state_machine port map(
     pedsig_ew,     -- pedestrian hold register signal (EW)
