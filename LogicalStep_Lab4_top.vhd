@@ -60,7 +60,7 @@ architecture simplecircuit of LogicalStep_Lab4_top is
     rst_n          : in  std_logic;
     rst_n_filtered : out std_logic;
     pb_n           : in  std_logic_vector(3 downto 0);
-    pb_n_filtered  : out std_logic_vector(3 downto 0);
+    pb_n_filtered  : out std_logic_vector(3 downto 0)
     );
   end component;
 
@@ -81,6 +81,21 @@ architecture simplecircuit of LogicalStep_Lab4_top is
     );
   end component;
 
+  component state_machine port (
+    ew_hold    : in std_logic;
+	 ns_hold    : in std_logic;
+	 clk_input  : in std_logic;
+	 blink_sig  : in std_logic;
+	 reset      : in  std_logic;
+    ew_traffic : out std_logic;
+	 ns_traffic : out std_logic;
+	 ew_clear   : out std_logic;
+	 ns_clear   : out std_logic;
+	 ew_cross   : out std_logic;
+	 ns_cross   : out std_logic
+  );
+  end component;
+  
   -- set to FALSE for LogicalStep board downloads
   -- set to TRUE for simulations
   constant sim_mode : boolean := FALSE;
@@ -90,12 +105,15 @@ architecture simplecircuit of LogicalStep_Lab4_top is
   -- pb(3) is used as an active-high reset for all registers
   signal pb_filtered : std_logic_vector(3 downto 0);
   signal pb : std_logic_vector(3 downto 0);
+  signal rst : std_logic;
 
   signal rst_n_filtered : std_logic;
 
   signal ew_traffic, ns_traffic : std_logic_vector(2 downto 0);
 
   signal ew_out, ns_out : std_logic_vector(6 downto 0);
+  
+  signal ew_pending, ns_pending : std_logic;
 
 begin
   PB_FILL   : component PB_filters port map(
@@ -105,6 +123,8 @@ begin
     pb_n,
     pb_filtered
   );
+  
+  rst <= NOT rst_n_filtered;
 
   PB_INVERT : component pb_inverters port map(pb_filtered, pb);
 
@@ -115,14 +135,38 @@ begin
     sm_clken,
     blink_sig
   );
+  
+  HOLDREG_EW : component holding_register port map(
+    sm_clken,  -- clock
+	 rst,       -- RESET
+	 ew_clear,  -- REG CLEAR
+	 INPUT,     -- synchronizer
+	 ew_pending -- PENDING SIGNAL FOR EW
+  );
+  
+  HOLDREG_NS : component holding_register port map(
+    sm_clken,  -- clock
+	 rst,       -- RESET
+	 ns_clear,  -- REG CLEAR
+	 INPUT,     -- synchronizer
+	 ns_pending -- PENDING SIGNAL FOR EW
+  );
+  
+  leds(3) <= ew_pending;
+  leds(1) <= ns_pending;
 
   MOORE_MAC : component state_machine port map(
     pedsig_ew,     -- pedestrian hold register signal (EW)
     pedsig_ns,     -- pedestrian hold register signal (NS)
     sm_clken,      -- cycle generator normal clock
     blink_sig,     -- cycle generator blink clock
+	 pb(3),         -- reset
     ew_traffic,    -- output in EW
-    ns_traffic     -- output in NS 
+    ns_traffic,    -- output in NS
+	 ew_clear,      -- clearing signal EW to holding register
+    ns_clear,      -- clearing signal NS to holding register
+	 leds(2),       -- EW crossing display
+	 leds(0)        -- NS crossing display
   );
 
   -- Output seven segment code

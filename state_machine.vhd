@@ -4,8 +4,8 @@ library ieee;
   use ieee.std_logic_1164.all;
 
 entity state_machine is port(
-  clk_input, reset, i0, i1, i2 : in  std_logic;
-  output1, output2             : out std_logic
+  ew_hold, ns_hold, clk_input, blink_sig, reset : in  std_logic;
+  ew_traffic, ns_traffic, ew_clear, ns_clear, ew_cross, ns_cross : out std_logic
   );
 end entity;
 
@@ -19,21 +19,37 @@ begin
   begin
     case current_state is
       when s0  =>
+			next_state <= s1;
       when s1  =>
+			next_state <= s2;
       when s2  =>
+			next_state <= s3;
       when s3  =>
+			next_state <= s4;
       when s4  =>
+			next_state <= s5;
       when s5  =>
+			next_state <= s6;
       when s6  =>
+			next_state <= s7;
       when s7  =>
+			next_state <= s8;
       when s8  =>
+			next_state <= s9;
       when s9  =>
+			next_state <= s10;
       when s10 =>
+			next_state <= s11;
       when s11 =>
+			next_state <= s12;
       when s12 =>
+			next_state <= s13;
       when s13 =>
+			next_state <= s14;
       when s14 =>
+			next_state <= s15;
       when s15 =>
+			next_state <= s0;
     end case;
   end process;
 
@@ -51,22 +67,34 @@ begin
   decoder_section: process (current_state)
   begin
     case current_state is
-      when s0  =>
-      when s1  =>
-      when s2  =>
-      when s3  =>
-      when s4  =>
-      when s5  =>
-      when s6  =>
-      when s7  =>
-      when s8  =>
-      when s9  =>
-      when s10 =>
-      when s11 =>
-      when s12 =>
-      when s13 =>
-      when s14 =>
-      when s15 =>
+      when s0 | s1 =>
+			ns_traffic(2) <= blink_sig; -- GREEN FLASHING ONLY
+			ns_traffic(1) <= 0;
+			ns_traffic(0) <= 0;
+			ew_traffic <= "001";
+      when s2 | s3  =>
+			ns_traffic <= "100"; -- GREEN ON
+			ew_traffic <= "001";
+      when s4 | s5 =>
+			ns_traffic <= "100";
+			ew_traffic <= "001";
+      when s6 | s7  =>
+			ns_traffic <= "010";
+			ew_traffic <= "001";
+      when s8 | s9  =>
+			ns_traffic <= "001";
+			ew_traffic(2) <= blink_sig;
+			ew_traffic(1) <= 0;
+			ew_traffic(0) <= 0;
+      when s10 | s11  =>
+			ns_traffic <= "001";
+			ew_traffic <= "100";
+      when s12 | s13 =>
+			ns_traffic <= "001";
+			ew_traffic <= "100";
+      when s14 | s15 =>
+			ns_traffic <= "001";
+			ew_traffic <= "010";
     end case;
   end process;
 
