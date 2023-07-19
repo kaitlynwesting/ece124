@@ -163,7 +163,7 @@ begin
   );
   
   HOLDREG_EW : component holding_register port map(
-    sm_clken,  -- clock
+    clkin_50,  -- clock
     synch_rst, -- RESET
     ew_clear,  -- REG CLEAR
     ew_sync,   -- synchronizer
@@ -171,7 +171,7 @@ begin
   );
   
   HOLDREG_NS : component holding_register port map(
-    sm_clken,  -- clock
+    clkin_50,  -- clock
     synch_rst, -- RESET
     ns_clear,  -- REG CLEAR
     ns_sync,   -- synchronizer
