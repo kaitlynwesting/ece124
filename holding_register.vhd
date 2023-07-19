@@ -1,5 +1,8 @@
+-- PROGRAM    "Lab 4"
+-- AUTHORS    "Leo Qi, Kaitlyn Wang"
+
 library ieee;
-use ieee.std_logic_1164.all;
+  use ieee.std_logic_1164.all;
 
 entity holding_register is port (
   clk          : in std_logic;
@@ -16,7 +19,7 @@ begin
   dout <= sreg;
   reg: process (clk)
   begin
-    if (reset='1') then -- IF THERE ARE CIRCUIT PROBLEMS, change this to be inside rising_edge if
+    if (reset='1') then
       sreg <= '0';
     elsif (rising_edge(clk)) then
       sreg <= (din or sreg) and not (reset or register_clr);

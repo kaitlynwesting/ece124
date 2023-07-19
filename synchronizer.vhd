@@ -1,3 +1,6 @@
+-- PROGRAM    "Lab 4"
+-- AUTHORS    "Leo Qi, Kaitlyn Wang"
+
 library ieee;
 use ieee.std_logic_1164.all;
 

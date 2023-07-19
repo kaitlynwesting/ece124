@@ -1,3 +1,6 @@
+-- PROGRAM    "Lab 4"
+-- AUTHORS    "Leo Qi, Kaitlyn Wang"
+
 library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
@@ -20,7 +23,7 @@ entity LogicalStep_Lab4_top is
   );
 end entity LogicalStep_Lab4_top;
 
-architecture simplecircuit of LogicalStep_Lab4_top is
+architecture design of LogicalStep_Lab4_top is
 
   component segment7_mux is port (
     clk  : in    std_logic := '0';
@@ -138,48 +141,45 @@ begin
   
   -- synchronizer for east-west direction
   SYNC_EW : component synchronizer port map(
-	clkin_50,  -- global clock
-	synch_rst, -- synchronized reset
-	pb(1),     -- EW crossing
-	ew_sync    -- synced EW pedestrian button
+    clkin_50,  -- global clock
+    synch_rst, -- synchronized reset
+    pb(1),     -- EW crossing
+    ew_sync    -- synced EW pedestrian button
   );
   
   -- synchronizer for north-south direction
   SYNC_NS: component synchronizer port map(
-	clkin_50,  -- global clock input
-	synch_rst, -- reset for registers and SM
-	pb(0),     -- input for NS crossing
-	ns_sync    -- output in NS
+    clkin_50,  -- global clock input
+    synch_rst, -- reset for registers and SM
+    pb(0),     -- input for NS crossing
+    ns_sync    -- output in NS
   );
   
   SYNC_RST : component synchronizer port map(
-	clkin_50,
-	'0',
-	rst,
-	synch_rst
+    clkin_50,
+    '0',
+    rst,
+    synch_rst
   );
-  
-  leds(6) <= ew_clear;
-  leds(5) <= ns_clear;
   
   HOLDREG_EW : component holding_register port map(
     sm_clken,  -- clock
-	 synch_rst,       -- RESET
-	 ew_clear,  -- REG CLEAR
-	 ew_sync,     -- synchronizer
-	 ew_pending -- PENDING SIGNAL FOR EW
+    synch_rst, -- RESET
+    ew_clear,  -- REG CLEAR
+    ew_sync,   -- synchronizer
+    ew_pending -- PENDING SIGNAL FOR EW
   );
   
   HOLDREG_NS : component holding_register port map(
     sm_clken,  -- clock
-	 synch_rst,       -- RESET
-	 ns_clear,  -- REG CLEAR
-	 ns_sync,     -- synchronizer
-	 ns_pending -- PENDING SIGNAL FOR EW
+    synch_rst, -- RESET
+    ns_clear,  -- REG CLEAR
+    ns_sync,   -- synchronizer
+    ns_pending -- PENDING SIGNAL FOR NS
   );
-  
-  leds(3) <= ew_pending;--ew_pending;
-  leds(1) <= ns_pending; --ns_pending;
+
+  leds(3) <= ew_pending; -- Pedestrian waiting to cross EW
+  leds(1) <= ns_pending; -- Pedestrian waiting to cross NS
 
   CLOCK_GEN : component clock_generator port map(
     sim_mode,
@@ -192,21 +192,20 @@ begin
   leds(7) <= synch_rst;
 
   MOORE_MAC : component state_machine port map(
-    ew_pending,     -- pedestrian hold register signal (EW)
-    ns_pending,     -- pedestrian hold register signal (NS)
+    ew_pending,    -- pedestrian hold register signal (EW)
+    ns_pending,    -- pedestrian hold register signal (NS)
     sm_clken,      -- cycle generator normal clock
     blink_sig,     -- cycle generator blink clock
-	 synch_rst,         -- reset
+    synch_rst,     -- reset
     ew_traffic,    -- output in EW
     ns_traffic,    -- output in NS
-	 ew_clear,      -- clearing signal EW to holding register
+    ew_clear,      -- clearing signal EW to holding register
     ns_clear,      -- clearing signal NS to holding register
-	 leds(2),       -- EW crossing display
-	 leds(0)        -- NS crossing display
+    leds(2),       -- EW crossing display
+    leds(0)        -- NS crossing display
   );
 
-  -- Output seven segment code
-
+  -- Output seven segment code for east-west
   TRAFFIC_EW : component segment7_traffic port map (
     ew_traffic(2),
     ew_traffic(1),
@@ -214,6 +213,7 @@ begin
     ew_out
   );
 
+  -- Output seven segment code for north-south
   TRAFFIC_NS : component segment7_traffic port map (
     ns_traffic(2),
     ns_traffic(1),
@@ -230,4 +230,4 @@ begin
     seg7_char1
   );
 
-end architecture simplecircuit;
+end architecture;
