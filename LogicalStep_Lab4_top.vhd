@@ -16,6 +16,8 @@ entity LogicalStep_Lab4_top is
     -- you can add temporary output ports here if you need to debug your design
     -- or to add internal signals for your simulations
     -------------------------------------------------------------
+	 sm_clkenout : out std_logic;
+	 blink_sigout : out std_logic;
 
     seg7_data  : out   std_logic_vector(6 downto 0); -- 7-bit outputs to a 7-segment
     seg7_char1 : out   std_logic;                    -- seg7 digi selectors
@@ -101,7 +103,7 @@ architecture design of LogicalStep_Lab4_top is
   
   -- set to FALSE for LogicalStep board downloads
   -- set to TRUE for simulations
-  constant sim_mode : boolean := FALSE;
+  constant sim_mode : boolean := TRUE;
 
   signal sm_clken, blink_sig : std_logic;
 
@@ -163,7 +165,7 @@ begin
   );
   
   HOLDREG_EW : component holding_register port map(
-    sm_clken,  -- clock
+    clkin_50,  -- clock
     synch_rst, -- RESET
     ew_clear,  -- REG CLEAR
     ew_sync,   -- synchronizer
@@ -171,7 +173,7 @@ begin
   );
   
   HOLDREG_NS : component holding_register port map(
-    sm_clken,  -- clock
+    clkin_50,  -- clock
     synch_rst, -- RESET
     ns_clear,  -- REG CLEAR
     ns_sync,   -- synchronizer
@@ -182,52 +184,55 @@ begin
   leds(1) <= ns_pending; -- Pedestrian waiting to cross NS
 
   CLOCK_GEN : component clock_generator port map(
-    sim_mode,
-    synch_rst,
-    clkin_50,
-    sm_clken,
-    blink_sig
+   sim_mode,
+   synch_rst,
+   clkin_50,
+   sm_clken,
+   blink_sig
   );
-  
+
   leds(7) <= synch_rst;
 
   MOORE_MAC : component state_machine port map(
-    ew_pending,    -- pedestrian hold register signal (EW)
-    ns_pending,    -- pedestrian hold register signal (NS)
-    sm_clken,      -- cycle generator normal clock
-    blink_sig,     -- cycle generator blink clock
-    synch_rst,     -- reset
-    ew_traffic,    -- output in EW
-    ns_traffic,    -- output in NS
-    ew_clear,      -- clearing signal EW to holding register
-    ns_clear,      -- clearing signal NS to holding register
-    leds(2),       -- EW crossing display
-    leds(0)        -- NS crossing display
+   ew_pending,    -- pedestrian hold register signal (EW)
+   ns_pending,    -- pedestrian hold register signal (NS)
+   sm_clken,      -- cycle generator normal clock
+   blink_sig,     -- cycle generator blink clock
+   synch_rst,     -- reset
+   ew_traffic,    -- output in EW
+   ns_traffic,    -- output in NS
+   ew_clear,      -- clearing signal EW to holding register
+   ns_clear,      -- clearing signal NS to holding register
+   leds(2),       -- EW crossing display
+   leds(0)        -- NS crossing display
   );
 
   -- Output seven segment code for east-west
   TRAFFIC_EW : component segment7_traffic port map (
-    ew_traffic(2),
-    ew_traffic(1),
-    ew_traffic(0),
-    ew_out
+   ew_traffic(2),
+   ew_traffic(1),
+   ew_traffic(0),
+   ew_out
   );
 
   -- Output seven segment code for north-south
   TRAFFIC_NS : component segment7_traffic port map (
-    ns_traffic(2),
-    ns_traffic(1),
-    ns_traffic(0),
-    ns_out
+   ns_traffic(2),
+   ns_traffic(1),
+   ns_traffic(0),
+   ns_out
   );
 
   SEVENSEG_MUX : component segment7_mux port map (
-    clkin_50,
-    ns_out, -- din2
-    ew_out, -- din1
-    seg7_data, -- builtin LogicalStep outputs
-    seg7_char2,
-    seg7_char1
+   clkin_50,
+   ns_out, -- din2
+   ew_out, -- din1
+   seg7_data, -- builtin LogicalStep outputs
+   seg7_char2,
+   seg7_char1
   );
+  
+  sm_clkenout <= sm_clken;
+  blink_sigout <= blink_sig;
 
 end architecture;
