@@ -13,9 +13,9 @@ end entity;
 architecture design of segment7_traffic is
 
 begin
-  sevenseg <= "00000001" when green = '1' else
-              "10000000" when amber = '1' else
-              "00001000" when red   = '1' else
-              "00000000";
+  sevenseg <= "0001000" when green = '1' else
+              "1000000" when amber = '1' else
+              "0000001" when red   = '1' else
+              "0000000";
 
 end architecture design;

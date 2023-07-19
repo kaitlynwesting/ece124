@@ -1,11 +1,13 @@
--- Mealy state machine
+-- PROGRAM    "Lab 4"
+-- AUTHORS    "Leo Qi, Kaitlyn Wang"
 
 library ieee;
   use ieee.std_logic_1164.all;
 
 entity state_machine is port(
   ew_hold, ns_hold, clk_input, blink_sig, reset : in  std_logic;
-  ew_traffic, ns_traffic, ew_clear, ns_clear, ew_cross, ns_cross : out std_logic
+  ew_traffic, ns_traffic : out std_logic_vector(2 downto 0);
+  ew_clear, ns_clear, ew_cross, ns_cross : out std_logic
   );
 end entity;
 
@@ -15,13 +17,21 @@ architecture design of state_machine is
 
 begin
 
-  transition_section: process (i0, i1, i2, current_state)
+  transition_section: process (current_state, ns_hold, ew_hold)
   begin
     case current_state is
       when s0  =>
-			next_state <= s1;
+			if (ew_hold='1' and ns_hold='0') then
+			  next_state <= s6;
+			else
+           next_state <= s1;
+			end if;
       when s1  =>
-			next_state <= s2;
+			if (ew_hold='1' and ns_hold='0') then
+			  next_state <= s6;
+			else
+           next_state <= s2;
+			end if;
       when s2  =>
 			next_state <= s3;
       when s3  =>
@@ -35,9 +45,17 @@ begin
       when s7  =>
 			next_state <= s8;
       when s8  =>
-			next_state <= s9;
+			if (ns_hold='1' and ew_hold='0') then
+			  next_state <= s14;
+			else
+           next_state <= s9;
+			end if;
       when s9  =>
-			next_state <= s10;
+			if (ns_hold='1' and ew_hold='0') then
+			  next_state <= s15;
+			else
+           next_state <= s10;
+			end if;
       when s10 =>
 			next_state <= s11;
       when s11 =>
@@ -69,32 +87,78 @@ begin
     case current_state is
       when s0 | s1 =>
 			ns_traffic(2) <= blink_sig; -- GREEN FLASHING ONLY
-			ns_traffic(1) <= 0;
-			ns_traffic(0) <= 0;
+			ns_traffic(1) <= '0';
+			ns_traffic(0) <= '0';
 			ew_traffic <= "001";
+			ew_cross <= '0';
+			ns_cross <= '0';
+			ew_clear <= '0';
+			ns_clear <= '0';
       when s2 | s3  =>
 			ns_traffic <= "100"; -- GREEN ON
 			ew_traffic <= "001";
+			ew_cross <= '0';
+			ns_cross <= '1';
+			ew_clear <= '0';
+			ns_clear <= '0';
       when s4 | s5 =>
 			ns_traffic <= "100";
 			ew_traffic <= "001";
-      when s6 | s7  =>
+			ew_cross <= '0';
+			ns_cross <= '1';
+			ew_clear <= '0';
+			ns_clear <= '0';
+      when s6  =>
 			ns_traffic <= "010";
 			ew_traffic <= "001";
+			ew_cross <= '0';
+			ns_cross <= '0';
+			ew_clear <= '0';
+			ns_clear <= '1';
+		when s7  =>
+			ns_traffic <= "010";
+			ew_traffic <= "001";
+			ew_cross <= '0';
+			ns_cross <= '0';
+			ew_clear <= '0';
+			ns_clear <= '0';
       when s8 | s9  =>
 			ns_traffic <= "001";
 			ew_traffic(2) <= blink_sig;
-			ew_traffic(1) <= 0;
-			ew_traffic(0) <= 0;
+			ew_traffic(1) <= '0';
+			ew_traffic(0) <= '0';
+			ew_cross <= '0';
+			ns_cross <= '0';
+			ew_clear <= '0';
+			ns_clear <= '0';
       when s10 | s11  =>
 			ns_traffic <= "001";
 			ew_traffic <= "100";
+			ew_cross <= '1';
+			ns_cross <= '0';
+			ew_clear <= '0';
+			ns_clear <= '0';
       when s12 | s13 =>
 			ns_traffic <= "001";
 			ew_traffic <= "100";
-      when s14 | s15 =>
+			ew_cross <= '1';
+			ns_cross <= '0';
+			ew_clear <= '0';
+			ns_clear <= '0';
+      when s14 =>
 			ns_traffic <= "001";
 			ew_traffic <= "010";
+			ew_cross <= '0';
+			ns_cross <= '0';
+			ew_clear <= '1';
+			ns_clear <= '0';
+		when s15 =>
+			ns_traffic <= "001";
+			ew_traffic <= "010";
+			ew_cross <= '0';
+			ns_cross <= '0';
+			ew_clear <= '0';
+			ns_clear <= '0';
     end case;
   end process;
 

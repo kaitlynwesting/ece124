@@ -87,8 +87,8 @@ architecture simplecircuit of LogicalStep_Lab4_top is
 	 clk_input  : in std_logic;
 	 blink_sig  : in std_logic;
 	 reset      : in  std_logic;
-    ew_traffic : out std_logic;
-	 ns_traffic : out std_logic;
+    ew_traffic : out std_logic_vector(2 downto 0);
+	 ns_traffic : out std_logic_vector(2 downto 0);
 	 ew_clear   : out std_logic;
 	 ns_clear   : out std_logic;
 	 ew_cross   : out std_logic;
@@ -116,71 +116,87 @@ architecture simplecircuit of LogicalStep_Lab4_top is
   signal ew_traffic, ns_traffic : std_logic_vector(2 downto 0);
 
   signal ew_out, ns_out : std_logic_vector(6 downto 0);
+  signal ew_clear, ns_clear : std_logic;
   
   signal ew_pending, ns_pending : std_logic;
 
 begin
+  -- Filter inputs
   PB_FILL   : component PB_filters port map(
-    clkin_50,
-    rst_n,
-    rst_n_filtered,
-    pb_n,
-    pb_filtered
+    clkin_50,       -- global clock
+    rst_n,          -- reset (active low)
+    rst_n_filtered, -- output, filtered
+    pb_n,           -- push buttons (active low)
+    pb_filtered     -- output, filtered
   );
   
+  -- Invert active low inputs
+  PB_INVERT : component pb_inverters port map(pb_filtered, pb);
   rst <= NOT rst_n_filtered;
 
-  PB_INVERT : component pb_inverters port map(pb_filtered, pb);
-
-  CLOCK_GEN : component clock_generator port map(
-    sim_mode,
-    pb(3),
-    clkin_50,
-    sm_clken,
-    blink_sig
+  -- Synchronize filtered inputs to clock
+  
+  -- synchronizer for east-west direction
+  SYNC_EW : component synchronizer port map(
+	clkin_50,  -- global clock
+	synch_rst, -- synchronized reset
+	pb(1),     -- EW crossing
+	ew_sync    -- synced EW pedestrian button
   );
+  
+  -- synchronizer for north-south direction
+  SYNC_NS: component synchronizer port map(
+	clkin_50,  -- global clock input
+	synch_rst, -- reset for registers and SM
+	pb(0),     -- input for NS crossing
+	ns_sync    -- output in NS
+  );
+  
+  SYNC_RST : component synchronizer port map(
+	clkin_50,
+	'0',
+	rst,
+	synch_rst
+  );
+  
+  leds(6) <= ew_clear;
+  leds(5) <= ns_clear;
   
   HOLDREG_EW : component holding_register port map(
     sm_clken,  -- clock
-	 rst,       -- RESET
+	 synch_rst,       -- RESET
 	 ew_clear,  -- REG CLEAR
-	 INPUT,     -- synchronizer
+	 ew_sync,     -- synchronizer
 	 ew_pending -- PENDING SIGNAL FOR EW
   );
   
   HOLDREG_NS : component holding_register port map(
     sm_clken,  -- clock
-	 rst,       -- RESET
+	 synch_rst,       -- RESET
 	 ns_clear,  -- REG CLEAR
-	 INPUT,     -- synchronizer
+	 ns_sync,     -- synchronizer
 	 ns_pending -- PENDING SIGNAL FOR EW
   );
   
-  leds(3) <= ew_pending;
-  leds(1) <= ns_pending;
+  leds(3) <= ew_pending;--ew_pending;
+  leds(1) <= ns_pending; --ns_pending;
 
-  -- synchronizer instance for east-west
-  SYNC_EW: component synchronizer port map(
-	clkin_50, -- global clock input
-	synch_rst, -- reset for registers and SM
-	pb(1), -- input for EW crossing
-	ew_sync -- output in EW
+  CLOCK_GEN : component clock_generator port map(
+    sim_mode,
+    synch_rst,
+    clkin_50,
+    sm_clken,
+    blink_sig
   );
-
-  -- synchronizer instance for north-south
-  SYNC_NS: component synchronizer port map(
-	clkin_50, -- global clock input
-	synch_rst, -- reset for registers and SM
-	pb(0), -- input for NS crossing
-	ns_sync -- output in NS
-  );
+  
+  leds(7) <= synch_rst;
 
   MOORE_MAC : component state_machine port map(
-    pedsig_ew,     -- pedestrian hold register signal (EW)
-    pedsig_ns,     -- pedestrian hold register signal (NS)
+    ew_pending,     -- pedestrian hold register signal (EW)
+    ns_pending,     -- pedestrian hold register signal (NS)
     sm_clken,      -- cycle generator normal clock
     blink_sig,     -- cycle generator blink clock
-	 pb(3),         -- reset
+	 synch_rst,         -- reset
     ew_traffic,    -- output in EW
     ns_traffic,    -- output in NS
 	 ew_clear,      -- clearing signal EW to holding register
