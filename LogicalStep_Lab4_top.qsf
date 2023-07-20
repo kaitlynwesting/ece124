@@ -54,23 +54,11 @@ set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_
 set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_symbol
 set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_signal_integrity
 set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_boundary_scan
-set_global_assignment -name VHDL_FILE state_machine.vhd
-set_global_assignment -name VHDL_FILE segment7_traffic.vhd
-set_global_assignment -name VHDL_FILE synchronizer.vhd
-set_global_assignment -name VHDL_FILE State_Machine_Example.vhd
-set_global_assignment -name VHDL_FILE segment7_mux.vhd
-set_global_assignment -name VHDL_FILE PB_inverters.vhd
-set_global_assignment -name VHDL_FILE PB_filters.vhd
-set_global_assignment -name VHDL_FILE LogicalStep_Lab4_top.vhd
-set_global_assignment -name VHDL_FILE holding_register.vhd
-set_global_assignment -name VHDL_FILE clock_generator.vhd
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_global_assignment -name BDF_FILE Block1.bdf
-set_global_assignment -name TCL_SCRIPT_FILE ../Downloads/Lab4/Lab4/LogicalStep_Lab4.tcl
 set_global_assignment -name IOBANK_VCCIO 3.3V -section_id 1A
 set_global_assignment -name IOBANK_VCCIO 3.3V -section_id 1B
 set_global_assignment -name IOBANK_VCCIO 3.3V -section_id 2
@@ -91,8 +79,6 @@ set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
 set_global_assignment -name FLOW_ENABLE_POWER_ANALYZER ON
 set_global_assignment -name POWER_DEFAULT_INPUT_IO_TOGGLE_RATE "12.5 %"
-set_global_assignment -name SDC_FILE LogicalStep_Lab4_top.out.sdc
-set_global_assignment -name SOURCE_FILE LogicalStep_Lab4_top.vhd
 set_global_assignment -name EXTERNAL_FLASH_FALLBACK_ADDRESS 00000000
 set_global_assignment -name INTERNAL_FLASH_UPDATE_MODE "SINGLE COMP IMAGE"
 set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to aud_adc_dat
@@ -294,6 +280,24 @@ set_location_assignment PIN_15 -to aud_scl
 set_instance_assignment -name AUTO_OPEN_DRAIN_PINS ON -to seg7_data[1]
 set_instance_assignment -name AUTO_OPEN_DRAIN_PINS ON -to seg7_data[5]
 set_instance_assignment -name AUTO_OPEN_DRAIN_PINS ON -to seg7_data[6]
+set_global_assignment -name SOURCE_FILE Block1.cmp
+set_global_assignment -name VHDL_FILE Block2.vhd
+set_global_assignment -name VHDL_FILE Block1.vhd
+set_global_assignment -name VHDL_FILE state_machine.vhd
+set_global_assignment -name VHDL_FILE segment7_traffic.vhd
+set_global_assignment -name VHDL_FILE synchronizer.vhd
+set_global_assignment -name VHDL_FILE State_Machine_Example.vhd
+set_global_assignment -name VHDL_FILE segment7_mux.vhd
+set_global_assignment -name VHDL_FILE PB_inverters.vhd
+set_global_assignment -name VHDL_FILE PB_filters.vhd
+set_global_assignment -name VHDL_FILE LogicalStep_Lab4_top.vhd
+set_global_assignment -name VHDL_FILE holding_register.vhd
+set_global_assignment -name VHDL_FILE clock_generator.vhd
+set_global_assignment -name BDF_FILE Block1.bdf
+set_global_assignment -name TCL_SCRIPT_FILE ../Downloads/Lab4/Lab4/LogicalStep_Lab4.tcl
+set_global_assignment -name SDC_FILE LogicalStep_Lab4_top.out.sdc
 set_global_assignment -name BDF_FILE Block2.bdf
 set_global_assignment -name VECTOR_WAVEFORM_FILE Waveform.vwf
+set_global_assignment -name TCL_SCRIPT_FILE ../Downloads/Lab4/LogicalStep_Lab4.tcl
+set_global_assignment -name SOURCE_FILE LogicalStep_Lab4_top.vhd
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

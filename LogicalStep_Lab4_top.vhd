@@ -18,6 +18,8 @@ entity LogicalStep_Lab4_top is
     -------------------------------------------------------------
 	 sm_clkenout : out std_logic;
 	 blink_sigout : out std_logic;
+	 seg7_test1 : out std_logic_vector(6 downto 0);
+	 seg7_test2 : out std_logic_vector(6 downto 0);
 
     seg7_data  : out   std_logic_vector(6 downto 0); -- 7-bit outputs to a 7-segment
     seg7_char1 : out   std_logic;                    -- seg7 digi selectors
@@ -229,6 +231,9 @@ begin
    seg7_char2,
    seg7_char1
   );
+  
+  seg7_test1 <= ew_out;
+  seg7_test2 <= ns_out;
   
   sm_clkenout <= sm_clken;
   blink_sigout <= blink_sig;
