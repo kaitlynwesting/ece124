@@ -5,9 +5,10 @@ library ieee;
   use ieee.std_logic_1164.all;
 
 entity state_machine is port(
-  ew_hold, ns_hold, clk_input, blink_sig, reset : in std_logic;
-  ew_traffic, ns_traffic                        : out std_logic_vector(2 downto 0);
-  ew_clear, ns_clear, ew_cross, ns_cross        : out std_logic
+  ew_hold, ns_hold, clk_input, blink_sig, reset     : in std_logic;
+  ew_traffic, ns_traffic                            : out std_logic_vector(2 downto 0);
+  ew_clear, ns_clear, ew_cross, ns_cross : out std_logic;
+  state_num : out std_logic_vector(3 downto 0)
   );
 end entity;
 
@@ -82,7 +83,7 @@ begin
   decoder_section: process (current_state)
   begin
     case current_state is
-      when s0 | s1 =>
+      when s0 =>
         ns_traffic(2) <= blink_sig; -- GREEN FLASHING ONLY
         ns_traffic(1) <= '0';
         ns_traffic(0) <= '0';
@@ -91,35 +92,66 @@ begin
         ns_cross <= '0';
         ew_clear <= '0';
         ns_clear <= '0';
-      when s2 | s3  =>
+		  state_num <= "0000";
+		when s1 =>
+        ns_traffic(2) <= blink_sig; -- GREEN FLASHING ONLY
+        ns_traffic(1) <= '0';
+        ns_traffic(0) <= '0';
+        ew_traffic <= "001";
+        ew_cross <= '0';
+        ns_cross <= '0';
+        ew_clear <= '0';
+        ns_clear <= '0';
+		  state_num <= "0001";
+      when s2  =>
         ns_traffic <= "100"; -- GREEN ON
         ew_traffic <= "001";
         ew_cross <= '0';
         ns_cross <= '1';
         ew_clear <= '0';
         ns_clear <= '0';
-      when s4 | s5 =>
+		  state_num <= "0010";
+		when s3  =>
+        ns_traffic <= "100"; -- GREEN ON
+        ew_traffic <= "001";
+        ew_cross <= '0';
+        ns_cross <= '1';
+        ew_clear <= '0';
+        ns_clear <= '0';
+		  state_num <= "0011";
+      when s4  =>
         ns_traffic <= "100";
         ew_traffic <= "001";
         ew_cross <= '0';
         ns_cross <= '1';
         ew_clear <= '0';
         ns_clear <= '0';
-      when s6  =>
+		  state_num <= "0100";
+		when s5 =>
+        ns_traffic <= "100";
+        ew_traffic <= "001";
+        ew_cross <= '0';
+        ns_cross <= '1';
+        ew_clear <= '0';
+        ns_clear <= '0';
+		  state_num <= "0101";
+      when s6 =>
         ns_traffic <= "010";
         ew_traffic <= "001";
         ew_cross <= '0';
         ns_cross <= '0';
         ew_clear <= '0';
         ns_clear <= '1';
-    when s7  =>
+		  state_num <= "0110";
+      when s7  =>
         ns_traffic <= "010";
         ew_traffic <= "001";
         ew_cross <= '0';
         ns_cross <= '0';
         ew_clear <= '0';
         ns_clear <= '0';
-      when s8 | s9  =>
+		  state_num <= "0111";
+      when s8 =>
         ns_traffic <= "001";
         ew_traffic(2) <= blink_sig;
         ew_traffic(1) <= '0';
@@ -128,20 +160,49 @@ begin
         ns_cross <= '0';
         ew_clear <= '0';
         ns_clear <= '0';
-      when s10 | s11  =>
+		  state_num <= "1000";
+		when s9  =>
+        ns_traffic <= "001";
+        ew_traffic(2) <= blink_sig;
+        ew_traffic(1) <= '0';
+        ew_traffic(0) <= '0';
+        ew_cross <= '0';
+        ns_cross <= '0';
+        ew_clear <= '0';
+        ns_clear <= '0';
+		  state_num <= "1001";
+      when s10  =>
         ns_traffic <= "001";
         ew_traffic <= "100";
         ew_cross <= '1';
         ns_cross <= '0';
         ew_clear <= '0';
         ns_clear <= '0';
-      when s12 | s13 =>
+		  state_num <= "1010";
+		when s11  =>
         ns_traffic <= "001";
         ew_traffic <= "100";
         ew_cross <= '1';
         ns_cross <= '0';
         ew_clear <= '0';
         ns_clear <= '0';
+		  state_num <= "1011";
+      when s12 =>
+        ns_traffic <= "001";
+        ew_traffic <= "100";
+        ew_cross <= '1';
+        ns_cross <= '0';
+        ew_clear <= '0';
+        ns_clear <= '0';
+		  state_num <= "1100";
+		when s13 =>
+        ns_traffic <= "001";
+        ew_traffic <= "100";
+        ew_cross <= '1';
+        ns_cross <= '0';
+        ew_clear <= '0';
+        ns_clear <= '0';
+		  state_num <= "1101";
       when s14 =>
         ns_traffic <= "001";
         ew_traffic <= "010";
@@ -149,13 +210,15 @@ begin
         ns_cross <= '0';
         ew_clear <= '1';
         ns_clear <= '0';
-    when s15 =>
+		  state_num <= "1110";
+      when s15 =>
         ns_traffic <= "001";
         ew_traffic <= "010";
         ew_cross <= '0';
         ns_cross <= '0';
         ew_clear <= '0';
         ns_clear <= '0';
+		  state_num <= "1111";
     end case;
   end process;
 

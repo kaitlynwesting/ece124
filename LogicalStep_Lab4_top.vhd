@@ -95,7 +95,8 @@ architecture design of LogicalStep_Lab4_top is
 	 ew_clear   : out std_logic;
 	 ns_clear   : out std_logic;
 	 ew_cross   : out std_logic;
-	 ns_cross   : out std_logic
+	 ns_cross   : out std_logic;
+	 state_num  : out std_logic_vector(3 downto 0)
   );
   end component;
   
@@ -200,7 +201,8 @@ begin
     ew_clear,      -- clearing signal EW to holding register
     ns_clear,      -- clearing signal NS to holding register
     leds(2),       -- EW crossing display
-    leds(0)        -- NS crossing display
+    leds(0),       -- NS crossing display
+	 leds(7 downto 4)
   );
 
   -- Output seven segment code for east-west
