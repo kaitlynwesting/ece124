@@ -17,12 +17,14 @@ architecture circuit of holding_register is
   signal sreg : std_logic; -- digital F/F functionality
 begin
   dout <= sreg;
-  reg: process (clk)
+  reg: process (clk, reset)
   begin
-    if (reset='1') then
-      sreg <= '0';
-    elsif (rising_edge(clk)) then
-      sreg <= (din or sreg) and not (reset or register_clr);
+    if (rising_edge(clk)) then
+      if (reset='1') then
+        sreg <= '0';
+		else
+        sreg <= (din or sreg) and not (reset or register_clr);
+      end if;
     end if;
 	end process;
 end architecture;

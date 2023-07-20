@@ -70,17 +70,15 @@ begin
     end case;
   end process;
 
-  register_section: process (clk_input)
+  register_section: process (clk_input, reset)
   begin
-    if (rising_edge(clk_input)) then
-      if (reset='1') then
+    if (reset='1') then
         current_state <= s0;
-      else
+    elsif (rising_edge(clk_input)) then
         current_state <= next_state;
-      end if;
     end if;
   end process;
-
+  
   decoder_section: process (current_state)
   begin
     case current_state is

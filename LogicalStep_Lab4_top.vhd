@@ -139,6 +139,13 @@ begin
 
   -- Synchronize filtered inputs to clock
   
+  SYNC_RST : component synchronizer port map(
+    clkin_50,
+    '0',
+    rst,
+    synch_rst
+  );
+  
   -- synchronizer for east-west direction
   SYNC_EW : component synchronizer port map(
     clkin_50,  -- global clock
@@ -154,14 +161,7 @@ begin
     pb(0),     -- input for NS crossing
     ns_sync    -- output in NS
   );
-  
-  SYNC_RST : component synchronizer port map(
-    clkin_50,
-    '0',
-    rst,
-    synch_rst
-  );
-  
+
   HOLDREG_EW : component holding_register port map(
     clkin_50,  -- clock
     synch_rst, -- RESET
@@ -188,8 +188,6 @@ begin
     sm_clken,
     blink_sig
   );
-  
-  leds(7) <= synch_rst;
 
   MOORE_MAC : component state_machine port map(
     ew_pending,    -- pedestrian hold register signal (EW)

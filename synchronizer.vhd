@@ -13,17 +13,19 @@ entity synchronizer is port (
 end synchronizer; 
   
 architecture circuit of synchronizer is
-  signal sreg : std_logic_vector(1 downto 0); -- hmmm
+  signal sreg : std_logic_vector(1 downto 0);
 
 begin
   reg : process(clk, reset)
   begin
-    if (reset='1') then
-      sreg <= "00";
-    elsif (rising_edge(clk)) then
-      sreg(1) <= din;
-      dout <= sreg(0);
-      sreg(0) <= sreg(1);
+    if (rising_edge(clk)) then
+      if (reset='1') then
+        sreg <= "00";
+      else
+        sreg(1) <= din;
+        dout <= sreg(0);
+        sreg(0) <= sreg(1);
+      end if;
     end if;
   end process;
 end;
